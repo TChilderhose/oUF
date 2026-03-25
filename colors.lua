@@ -77,6 +77,17 @@ function oUF:CreateColor(r, g, b, a)
 	return color
 end
 
+--[[ Colors: oUF:DesaturateColor(color, desaturateAmount)
+
+--]]
+function oUF:DesaturateColor(color, desaturateAmount)
+	local i = (color.r + color.g + color.b) / 3
+	local dr = i - color.r
+	local dg = i - color.g
+	local db = i - color.b
+	return oUF:CreateColor(color.r + (dr * desaturateAmount), color.g + (dg * desaturateAmount), color.b + (db * desaturateAmount))
+end
+
 local colors = {
 	health = oUF:CreateColor(49, 207, 37),
 	disconnected = oUF:CreateColor(0.6, 0.6, 0.6),

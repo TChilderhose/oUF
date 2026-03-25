@@ -17,6 +17,7 @@ A default texture will be applied if the sub-widgets are StatusBars and don't ha
              value of [C_SpecializationInfo.GetSpecialization](https://warcraft.wiki.gg/wiki/API_C_SpecializationInfo.GetSpecialization) (boolean)
 .sortOrder - Sorting order. Sorts by the remaining cooldown time, 'asc' - from the least cooldown time remaining (fully
              charged) to the most (fully depleted), 'desc' - the opposite (string?)['asc', 'desc']
+.desaturateAmount -
 
 ## Examples
 
@@ -75,16 +76,21 @@ local function UpdateColor(self, event)
 
 	local spec = C_SpecializationInfo.GetSpecialization() or 0
 
-	local color
 	if(spec > 0 and spec < 4 and element.colorSpec) then
-		color = self.colors.runes[spec]
+		element.color = self.colors.runes[spec]
 	else
-		color = self.colors.power.RUNES
+		element.color = self.colors.power.RUNES
 	end
 
-	if(color) then
+	if element.desaturateAmount and element.desaturateAmount < 1 and element.desaturateAmount > 0 then
+		element.desaturateColor = oUF:DesaturateColor(element.color, element.desaturateAmount)
+	else
+		element.desaturateColor = element.color
+	end
+
+	if(element.color) then
 		for index = 1, #element do
-			element[index]:SetStatusBarColor(color:GetRGB())
+			element[index]:SetStatusBarColor(element.color:GetRGB())
 		end
 	end
 
@@ -95,7 +101,7 @@ local function UpdateColor(self, event)
 	* color - the used ColorMixin-based object (table?)
 	--]]
 	if(element.PostUpdateColor) then
-		element:PostUpdateColor(color)
+		element:PostUpdateColor(element.color)
 	end
 end
 
@@ -138,11 +144,17 @@ local function Update(self, event)
 				rune:SetMinMaxValues(0, 1)
 				rune:SetValue(1)
 				rune:SetScript('OnUpdate', nil)
+				if element.color then
+					rune:SetStatusBarColor(element.color:GetRGB())
+				end
 			elseif(start) then
 				rune.duration = currentTime - start
 				rune:SetMinMaxValues(0, duration)
 				rune:SetValue(0)
 				rune:SetScript('OnUpdate', onUpdate)
+				if element.desaturateColor then
+					rune:SetStatusBarColor(element.desaturateColor:GetRGB())
+				end
 			end
 
 			rune:Show()
