@@ -37,6 +37,9 @@ A default texture will be applied if the sub-widgets are StatusBars and don't ha
 
 local _, ns = ...
 local oUF = ns.oUF
+local Private = oUF.Private
+
+local unitIsUnit = Private.unitIsUnit
 
 local runemap = {1, 2, 3, 4, 5, 6}
 local hasSortOrder = false
@@ -213,7 +216,7 @@ local function Enable(self, unit)
 	end
 
 	local element = self.Runes
-	if(element and UnitIsUnit(unit, 'player')) then
+	if(element and unitIsUnit(unit, 'player')) then
 		element.__owner = self
 		element.ForceUpdate = ForceUpdate
 
